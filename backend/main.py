@@ -72,7 +72,7 @@ class QuestionOut(BaseModel):
 
 # POST /questions: Submit a question
 @app.post("/questions", response_model=QuestionOut)
-def create_question(q: QuestionCreate, db: Session = Depends(get_db)):
+async def create_question(q: QuestionCreate, db: Session = Depends(get_db)):
     if not q.message.strip():
         raise HTTPException(status_code=400, detail="Question cannot be blank.")
     question = Question(message=q.message.strip())
@@ -80,18 +80,44 @@ def create_question(q: QuestionCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(question)
     # Broadcast to WS clients
-    import asyncio
     from fastapi.encoders import jsonable_encoder
-    loop = asyncio.get_event_loop()
     question_dict = jsonable_encoder(question)
+    print(f"Broadcasting new question: {question_dict}")  # Debug print
     if ws_clients:
-        loop.create_task(broadcast_question(question_dict))
+        await broadcast_question(question_dict)
     return question
 
-# GET /questions: Fetch all questions
+# PUT /questions/{id}/status: Update question status (admins only)
+@app.put("/questions/{question_id}/status")
+async def update_question_status(question_id: int, status: QuestionStatus, admin: bool = False, db: Session = Depends(get_db)):
+    if not admin:
+        raise HTTPException(status_code=403, detail="Admin access required.")
+    question = db.query(Question).filter(Question.id == question_id).first()
+    if not question:
+        raise HTTPException(status_code=404, detail="Question not found.")
+    question.status = status
+    db.commit()
+    db.refresh(question)
+    # Broadcast the updated question
+    from fastapi.encoders import jsonable_encoder
+    question_dict = jsonable_encoder(question)
+    print(f"Broadcasting updated question: {question_dict}")  # Debug print
+    if ws_clients:
+        await broadcast_question(question_dict)
+    return question
+
+# Modified GET /questions: Fetch all questions with proper sorting
 @app.get("/questions", response_model=list[QuestionOut])
 def get_questions(db: Session = Depends(get_db)):
-    questions = db.query(Question).order_by(Question.timestamp.desc()).all()
+    # Get all questions and sort them
+    questions = db.query(Question).all()
+    
+    # Sort: Escalated first, then Pending, then Answered, each sorted by timestamp (newest first)
+    def sort_key(q):
+        status_order = {"Escalated": 0, "Pending": 1, "Answered": 2}
+        return (status_order[q.status], -q.timestamp.timestamp())
+    
+    questions.sort(key=sort_key)
     return questions
 
 # WebSocket endpoint
