@@ -217,73 +217,170 @@ export default function Forum() {
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#333' }}>Q&A Forum</h1>
-        <div style={{ textAlign: 'right' }}>
-          {isLoggedIn ? (
-            <div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#44aa44' }}>
-                Welcome, {currentUser?.username}!
+    <div style={{ 
+      maxWidth: 900, 
+      margin: '0 auto', 
+      padding: '20px', 
+      fontFamily: 'Arial, sans-serif',
+      backgroundColor: '#f8f9fa'
+    }}>
+      {/* Header with gradient background */}
+      <div style={{
+        background: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
+        borderRadius: '16px',
+        padding: '30px',
+        marginBottom: '30px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+        color: 'white'
+      }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center'
+        }}>
+          <div>
+            <h1 style={{ 
+              fontSize: '3rem', 
+              fontWeight: '800', 
+              margin: '0',
+              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              letterSpacing: '-1px'
+            }}>
+              Q&A Forum
+            </h1>
+            <p style={{
+              fontSize: '1.1rem',
+              margin: '8px 0 0 0',
+              opacity: '0.9',
+              fontWeight: '300'
+            }}>
+              Ask questions, get answers, stay connected
+            </p>
+          </div>
+          
+          <div style={{ textAlign: 'right' }}>
+            {isLoggedIn ? (
+              <div>
+                <div style={{ 
+                  fontSize: '1.2rem', 
+                  fontWeight: '600',
+                  marginBottom: '12px',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                }}>
+                  Welcome, {currentUser?.username}! 👋
+                </div>
+                <button 
+                  onClick={() => {
+                    localStorage.removeItem('user');
+                    setIsLoggedIn(false);
+                    setCurrentUser(null);
+                  }}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: 'rgba(255,255,255,0.2)',
+                    color: 'white',
+                    border: '2px solid rgba(255,255,255,0.3)',
+                    borderRadius: '25px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    backdropFilter: 'blur(10px)',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.backgroundColor = 'rgba(255,255,255,0.3)';
+                    e.target.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
+                    e.target.style.transform = 'translateY(0)';
+                  }}
+                >
+                  Logout
+                </button>
               </div>
-              <button 
-                onClick={() => {
-                  localStorage.removeItem('user');
-                  setIsLoggedIn(false);
-                  setCurrentUser(null);
-                }}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#ff4444',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '14px'
-                }}
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <div style={{ fontSize: '1.1rem', color: '#666' }}>
-              Guest User
-            </div>
-          )}
+            ) : (
+              <div>
+                <div style={{ 
+                  fontSize: '1.2rem', 
+                  fontWeight: '600',
+                  marginBottom: '12px',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                }}>
+                  Guest User
+                </div>
+                <div style={{
+                  fontSize: '0.9rem',
+                  opacity: '0.8',
+                  fontStyle: 'italic'
+                }}>
+                  Sign in for admin features
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
       
-      <form onSubmit={handleSubmit} style={{ marginBottom: 30 }}>
-        <div style={{ display: 'flex', gap: '10px' }}>
+      <form onSubmit={handleSubmit} style={{ 
+        marginBottom: 30,
+        background: 'white',
+        padding: '25px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        border: '1px solid #e9ecef'
+      }}>
+        <div style={{ display: 'flex', gap: '12px' }}>
           <input
             type="text"
-            placeholder="Type your question..."
+            placeholder="What's your question?"
             value={question}
             onChange={e => setQuestion(e.target.value)}
             style={{ 
               flex: 1, 
-              padding: '12px 16px', 
+              padding: '16px 20px', 
               fontSize: '16px',
-              border: '2px solid #ddd',
-              borderRadius: '8px',
+              border: '2px solid #e9ecef',
+              borderRadius: '10px',
               outline: 'none',
-              color: '#fff'
+              color: '#fff',
+              backgroundColor: '#495057',
+              transition: 'all 0.3s ease',
+              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#2c3e50';
+              e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.1), 0 0 0 3px rgba(44, 62, 80, 0.1)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#e9ecef';
+              e.target.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.1)';
             }}
           />
           <button 
             type="submit"
             style={{
-              padding: '12px 24px',
-              backgroundColor: '#44aa44',
+              padding: '16px 28px',
+              background: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
               color: 'white',
               border: 'none',
-              borderRadius: '8px',
+              borderRadius: '10px',
               cursor: 'pointer',
               fontSize: '16px',
-              fontWeight: 'bold'
+              fontWeight: '600',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px rgba(44, 62, 80, 0.3)'
+            }}
+            onMouseOver={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 20px rgba(44, 62, 80, 0.4)';
+            }}
+            onMouseOut={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 15px rgba(44, 62, 80, 0.3)';
             }}
           >
-            Submit Question
+            Ask Question
           </button>
         </div>
       </form>

@@ -157,7 +157,7 @@ async def create_question(q: QuestionCreate, db: Session = Depends(get_db)):
     # Broadcast to WS clients
     from fastapi.encoders import jsonable_encoder
     question_dict = jsonable_encoder(question)
-    print(f"Broadcasting new question: {question_dict}")  # Debug print
+    print(f"Broadcasting new question: {question_dict}") 
     if ws_clients:
         await broadcast_question(question_dict)
     return question
@@ -185,7 +185,7 @@ async def add_reply(question_id: int, reply: ReplyCreate, db: Session = Depends(
     from fastapi.encoders import jsonable_encoder
     question_dict = jsonable_encoder(question)
     question_dict['replies'] = [jsonable_encoder(r) for r in question.replies]
-    print(f"Broadcasting updated question with reply: {question_dict}")  # Debug print
+    print(f"Broadcasting updated question with reply: {question_dict}") 
     if ws_clients:
         await broadcast_question(question_dict)
     
@@ -204,7 +204,7 @@ async def update_question_status(question_id: int, status: QuestionStatus, db: S
     from fastapi.encoders import jsonable_encoder
     question_dict = jsonable_encoder(question)
     question_dict['replies'] = [jsonable_encoder(r) for r in question.replies]
-    print(f"Broadcasting updated question: {question_dict}")  # Debug print
+    print(f"Broadcasting updated question: {question_dict}") 
     if ws_clients:
         await broadcast_question(question_dict)
     return question
